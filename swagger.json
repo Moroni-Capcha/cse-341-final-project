@@ -1,0 +1,576 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Portfolio Builder API",
+    "description": "API documentation for Portfolio Builder (CSE 341 Final Project Part 1). Manages Users and Projects collections with complete CRUD operations, error handling, and validation.",
+    "version": "1.0.0"
+  },
+  "host": "localhost:8080",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "Users",
+      "description": "Operations for managing users"
+    },
+    {
+      "name": "Projects",
+      "description": "Operations for managing portfolio projects"
+    }
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "paths": {
+    "/users/": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Retrieve all users from the database",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users retrieved successfully",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Create a new user",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "User data to create",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserInput"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "User created successfully"
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "409": {
+            "description": "Username or email already exists"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Retrieve a single user by MongoDB ObjectId",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "24-character hexadecimal MongoDB ObjectId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User details",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Invalid ID format"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Update an existing user by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "24-character hexadecimal MongoDB ObjectId"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "User data to update",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User updated successfully"
+          },
+          "400": {
+            "description": "Validation failed or invalid ID"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Delete a user by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "24-character hexadecimal MongoDB ObjectId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully"
+          },
+          "400": {
+            "description": "Invalid ID format"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/projects/": {
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "description": "Retrieve all projects, optionally filtered by userId",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "Filter projects by user ID",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of projects retrieved successfully",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Project"
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Projects"
+        ],
+        "description": "Create a new project",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Project data to create",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ProjectInput"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Project created successfully"
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "404": {
+            "description": "Associated user not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/projects/{id}": {
+      "get": {
+        "tags": [
+          "Projects"
+        ],
+        "description": "Retrieve a single project by MongoDB ObjectId",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "24-character hexadecimal MongoDB ObjectId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Project details",
+            "schema": {
+              "$ref": "#/definitions/Project"
+            }
+          },
+          "400": {
+            "description": "Invalid ID format"
+          },
+          "404": {
+            "description": "Project not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Projects"
+        ],
+        "description": "Update an existing project by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "24-character hexadecimal MongoDB ObjectId"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Project data to update",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ProjectInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Project updated successfully"
+          },
+          "400": {
+            "description": "Validation failed or invalid ID"
+          },
+          "404": {
+            "description": "Project not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Projects"
+        ],
+        "description": "Delete a project by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "24-character hexadecimal MongoDB ObjectId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Project deleted successfully"
+          },
+          "400": {
+            "description": "Invalid ID format"
+          },
+          "404": {
+            "description": "Project not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "example": "670732808b89e3bb8e8c1111"
+        },
+        "username": {
+          "type": "string",
+          "example": "johndoe"
+        },
+        "email": {
+          "type": "string",
+          "example": "john.doe@example.com"
+        },
+        "firstName": {
+          "type": "string",
+          "example": "John"
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Doe"
+        },
+        "bio": {
+          "type": "string",
+          "example": "Full Stack Web Developer passionate about cloud architectures."
+        },
+        "role": {
+          "type": "string",
+          "example": "Full Stack Developer"
+        },
+        "skills": {
+          "type": "array",
+          "example": [
+            "JavaScript",
+            "Node.js",
+            "Express",
+            "MongoDB",
+            "React"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "githubUrl": {
+          "type": "string",
+          "example": "https://github.com/johndoe"
+        },
+        "portfolioUrl": {
+          "type": "string",
+          "example": "https://johndoe.dev"
+        },
+        "createdAt": {
+          "type": "string",
+          "example": "2026-10-09T12:00:00.000Z"
+        },
+        "updatedAt": {
+          "type": "string",
+          "example": "2026-10-09T12:00:00.000Z"
+        }
+      }
+    },
+    "UserInput": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "example": "johndoe"
+        },
+        "email": {
+          "type": "string",
+          "example": "john.doe@example.com"
+        },
+        "firstName": {
+          "type": "string",
+          "example": "John"
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Doe"
+        },
+        "bio": {
+          "type": "string",
+          "example": "Full Stack Web Developer passionate about cloud architectures."
+        },
+        "role": {
+          "type": "string",
+          "example": "Full Stack Developer"
+        },
+        "skills": {
+          "type": "array",
+          "example": [
+            "JavaScript",
+            "Node.js",
+            "Express",
+            "MongoDB"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "githubUrl": {
+          "type": "string",
+          "example": "https://github.com/johndoe"
+        },
+        "portfolioUrl": {
+          "type": "string",
+          "example": "https://johndoe.dev"
+        }
+      }
+    },
+    "Project": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "example": "670732808b89e3bb8e8c2222"
+        },
+        "title": {
+          "type": "string",
+          "example": "E-Commerce Platform"
+        },
+        "description": {
+          "type": "string",
+          "example": "A full-stack e-commerce web application with payment gateway."
+        },
+        "userId": {
+          "type": "string",
+          "example": "670732808b89e3bb8e8c1111"
+        },
+        "technologies": {
+          "type": "array",
+          "example": [
+            "Node.js",
+            "MongoDB",
+            "Express",
+            "Stripe"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "githubRepo": {
+          "type": "string",
+          "example": "https://github.com/johndoe/ecommerce-app"
+        },
+        "liveUrl": {
+          "type": "string",
+          "example": "https://ecommerce-demo.onrender.com"
+        },
+        "completed": {
+          "type": "boolean",
+          "example": true
+        },
+        "featured": {
+          "type": "boolean",
+          "example": true
+        },
+        "createdAt": {
+          "type": "string",
+          "example": "2026-10-09T12:00:00.000Z"
+        },
+        "updatedAt": {
+          "type": "string",
+          "example": "2026-10-09T12:00:00.000Z"
+        }
+      }
+    },
+    "ProjectInput": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "example": "E-Commerce Platform"
+        },
+        "description": {
+          "type": "string",
+          "example": "A full-stack e-commerce web application with payment gateway."
+        },
+        "userId": {
+          "type": "string",
+          "example": "670732808b89e3bb8e8c1111"
+        },
+        "technologies": {
+          "type": "array",
+          "example": [
+            "Node.js",
+            "MongoDB",
+            "Express",
+            "Stripe"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "githubRepo": {
+          "type": "string",
+          "example": "https://github.com/johndoe/ecommerce-app"
+        },
+        "liveUrl": {
+          "type": "string",
+          "example": "https://ecommerce-demo.onrender.com"
+        },
+        "completed": {
+          "type": "boolean",
+          "example": true
+        },
+        "featured": {
+          "type": "boolean",
+          "example": true
+        }
+      }
+    }
+  }
+}

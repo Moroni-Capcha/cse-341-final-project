@@ -1,0 +1,179 @@
+### Variables
+@localUrl = http://localhost:8080
+@renderUrl = https://cse-341-final-project.onrender.com
+@baseUrl = {{localUrl}}
+
+### ------------------------------------------------------------
+### ROOT & SWAGGER DOCS
+### ------------------------------------------------------------
+
+### Welcome Route
+GET {{baseUrl}}/
+
+### Swagger UI Documentation
+GET {{baseUrl}}/api-docs
+
+
+### ------------------------------------------------------------
+### 1. USERS COLLECTION CRUD OPERATIONS
+### ------------------------------------------------------------
+
+### GET all users
+GET {{baseUrl}}/users
+
+### POST create a new user (Valid)
+# @name createUser
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "username": "janedoe",
+  "email": "jane.doe@example.com",
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "bio": "Senior Cloud Software Engineer specializing in Node.js and distributed microservices.",
+  "role": "Cloud Architect",
+  "skills": ["Node.js", "Express", "MongoDB", "Docker", "AWS", "TypeScript"],
+  "githubUrl": "https://github.com/janedoe",
+  "portfolioUrl": "https://janedoe.tech"
+}
+
+### Store the created User ID from response
+@createdUserId = {{createUser.response.body.userId}}
+
+### GET user by valid ID
+GET {{baseUrl}}/users/{{createdUserId}}
+
+### PUT update user by ID (Valid)
+PUT {{baseUrl}}/users/{{createdUserId}}
+Content-Type: application/json
+
+{
+  "username": "janedoe_updated",
+  "email": "jane.updated@example.com",
+  "firstName": "Jane",
+  "lastName": "Smith-Doe",
+  "bio": "Lead Cloud Architect & Full-Stack Tech Lead.",
+  "role": "Lead Architect",
+  "skills": ["Node.js", "Express", "MongoDB", "Kubernetes", "AWS", "GraphQL"],
+  "githubUrl": "https://github.com/janedoe",
+  "portfolioUrl": "https://janedoe.tech"
+}
+
+### DELETE user by ID
+DELETE {{baseUrl}}/users/{{createdUserId}}
+
+
+### ------------------------------------------------------------
+### USERS VALIDATION & ERROR HANDLING TESTS
+### ------------------------------------------------------------
+
+### TEST ERROR: GET user with Invalid ID format (Expect 400 Bad Request)
+GET {{baseUrl}}/users/invalid-id-12345
+
+### TEST ERROR: GET user with Non-existent ID (Expect 404 Not Found)
+GET {{baseUrl}}/users/670732808b89e3bb8e8c9999
+
+### TEST ERROR: POST user with Missing Required Fields (Expect 400 Validation Error)
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "username": "ab",
+  "email": "not-an-email"
+}
+
+### TEST ERROR: POST duplicate user (Expect 409 Conflict if user already exists)
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "username": "janedoe",
+  "email": "jane.doe@example.com",
+  "firstName": "Jane",
+  "lastName": "Doe"
+}
+
+
+### ------------------------------------------------------------
+### 2. PROJECTS COLLECTION CRUD OPERATIONS
+### ------------------------------------------------------------
+
+### GET all projects
+GET {{baseUrl}}/projects
+
+### POST create project (Must use a valid existing userId)
+# @name createProject
+POST {{baseUrl}}/projects
+Content-Type: application/json
+
+{
+  "title": "Cloud Portfolio Engine",
+  "description": "High performance serverless portfolio rendering platform with MongoDB storage.",
+  "userId": "{{createdUserId}}",
+  "technologies": ["Node.js", "Express", "MongoDB", "Docker", "Swagger"],
+  "githubRepo": "https://github.com/janedoe/cloud-portfolio",
+  "liveUrl": "https://cloud-portfolio.onrender.com",
+  "completed": true,
+  "featured": true
+}
+
+### Store the created Project ID from response
+@createdProjectId = {{createProject.response.body.projectId}}
+
+### GET project by valid ID
+GET {{baseUrl}}/projects/{{createdProjectId}}
+
+### GET projects filtered by userId
+GET {{baseUrl}}/projects?userId={{createdUserId}}
+
+### PUT update project by ID
+PUT {{baseUrl}}/projects/{{createdProjectId}}
+Content-Type: application/json
+
+{
+  "title": "Cloud Portfolio Engine v2.0",
+  "description": "Enterprise-ready serverless portfolio engine with analytics and CI/CD pipelines.",
+  "userId": "{{createdUserId}}",
+  "technologies": ["Node.js", "Express", "MongoDB", "Kubernetes", "Swagger", "Jest"],
+  "githubRepo": "https://github.com/janedoe/cloud-portfolio-v2",
+  "liveUrl": "https://portfolio-v2.onrender.com",
+  "completed": true,
+  "featured": true
+}
+
+### DELETE project by ID
+DELETE {{baseUrl}}/projects/{{createdProjectId}}
+
+
+### ------------------------------------------------------------
+### PROJECTS VALIDATION & ERROR HANDLING TESTS
+### ------------------------------------------------------------
+
+### TEST ERROR: GET project with Invalid ID format (Expect 400 Bad Request)
+GET {{baseUrl}}/projects/short-id
+
+### TEST ERROR: GET project with Non-existent ID (Expect 404 Not Found)
+GET {{baseUrl}}/projects/670732808b89e3bb8e8c8888
+
+### TEST ERROR: POST project with Missing Required Fields (Expect 400 Validation Error)
+POST {{baseUrl}}/projects
+Content-Type: application/json
+
+{
+  "title": "",
+  "description": ""
+}
+
+### TEST ERROR: POST project with Non-existent User ID (Expect 404 Not Found)
+POST {{baseUrl}}/projects
+Content-Type: application/json
+
+{
+  "title": "Orphan Project",
+  "description": "Project created for a user that does not exist.",
+  "userId": "670732808b89e3bb8e8c9999"
+}
+
+### TEST ERROR: Invalid URL route (Expect 404 Route Not Found)
+GET {{baseUrl}}/non-existent-route
