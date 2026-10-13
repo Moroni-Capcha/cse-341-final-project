@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const usersController = require('../controllers/users');
 const { validateId, validateUser } = require('../middleware/validate');
+const { isAuthenticated } = require('../middleware/authenticate');
 
 // GET all users
 router.get('/', usersController.getAllUsers);
@@ -9,13 +10,13 @@ router.get('/', usersController.getAllUsers);
 // GET user by ID
 router.get('/:id', validateId, usersController.getUserById);
 
-// POST create new user
+// POST create new user (Public registration)
 router.post('/', validateUser, usersController.createUser);
 
-// PUT update user by ID
-router.put('/:id', validateId, validateUser, usersController.updateUser);
+// PUT update user by ID (Requires Authentication)
+router.put('/:id', isAuthenticated, validateId, validateUser, usersController.updateUser);
 
-// DELETE user by ID
-router.delete('/:id', validateId, usersController.deleteUser);
+// DELETE user by ID (Requires Authentication)
+router.delete('/:id', isAuthenticated, validateId, usersController.deleteUser);
 
 module.exports = router;

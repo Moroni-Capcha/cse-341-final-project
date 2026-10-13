@@ -221,12 +221,14 @@ const deleteUser = async (req, res, next) => {
       });
     }
 
-    // Also cascade cleanup: delete projects belonging to this user
+    // Also cascade cleanup: delete projects, experiences, and contacts belonging to this user
     await db.collection('projects').deleteMany({ userId: id });
+    await db.collection('experiences').deleteMany({ userId: id });
+    await db.collection('contacts').deleteMany({ userId: id });
 
     res.status(200).json({
       status: 200,
-      message: 'User and associated projects deleted successfully.'
+      message: 'User and associated projects, experiences, and contacts deleted successfully.'
     });
   } catch (err) {
     next(err);

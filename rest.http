@@ -1,17 +1,27 @@
 ### Variables
 @localUrl = http://localhost:8080
-@renderUrl = https://cse-341-final-project.onrender.com
+@renderUrl = https://cse-341-final-project-pidd.onrender.com
 @baseUrl = {{localUrl}}
 
 ### ------------------------------------------------------------
-### ROOT & SWAGGER DOCS
+### AUTHENTICATION & OAUTH ROUTES
 ### ------------------------------------------------------------
 
-### Welcome Route
+### Root Route (Returns HTML dashboard in browser, JSON for API clients)
 GET {{baseUrl}}/
+Accept: application/json
+
+### Authentication Status Check
+GET {{baseUrl}}/auth/status
 
 ### Swagger UI Documentation
 GET {{baseUrl}}/api-docs
+
+### GitHub OAuth Login (Open in browser: http://localhost:8080/login)
+GET {{baseUrl}}/login
+
+### Logout Route
+GET {{baseUrl}}/logout
 
 
 ### ------------------------------------------------------------
@@ -44,7 +54,7 @@ Content-Type: application/json
 ### GET user by valid ID
 GET {{baseUrl}}/users/{{createdUserId}}
 
-### PUT update user by ID (Valid)
+### PUT update user by ID (Valid - Protected by OAuth)
 PUT {{baseUrl}}/users/{{createdUserId}}
 Content-Type: application/json
 
@@ -60,13 +70,11 @@ Content-Type: application/json
   "portfolioUrl": "https://janedoe.tech"
 }
 
-### DELETE user by ID
+### DELETE user by ID (Protected by OAuth - Cascades to projects, experiences, contacts)
 DELETE {{baseUrl}}/users/{{createdUserId}}
 
 
-### ------------------------------------------------------------
-### USERS VALIDATION & ERROR HANDLING TESTS
-### ------------------------------------------------------------
+### --- Users Validation & Error Tests ---
 
 ### TEST ERROR: GET user with Invalid ID format (Expect 400 Bad Request)
 GET {{baseUrl}}/users/invalid-id-12345
@@ -83,7 +91,7 @@ Content-Type: application/json
   "email": "not-an-email"
 }
 
-### TEST ERROR: POST duplicate user (Expect 409 Conflict if user already exists)
+### TEST ERROR: POST duplicate user (Expect 409 Conflict)
 POST {{baseUrl}}/users
 Content-Type: application/json
 
@@ -102,7 +110,7 @@ Content-Type: application/json
 ### GET all projects
 GET {{baseUrl}}/projects
 
-### POST create project (Must use a valid existing userId)
+### POST create project (Requires OAuth Authentication)
 # @name createProject
 POST {{baseUrl}}/projects
 Content-Type: application/json
@@ -110,7 +118,7 @@ Content-Type: application/json
 {
   "title": "Cloud Portfolio Engine",
   "description": "High performance serverless portfolio rendering platform with MongoDB storage.",
-  "userId": "{{createdUserId}}",
+  "userId": "670732808b89e3bb8e8c1111",
   "technologies": ["Node.js", "Express", "MongoDB", "Docker", "Swagger"],
   "githubRepo": "https://github.com/janedoe/cloud-portfolio",
   "liveUrl": "https://cloud-portfolio.onrender.com",
@@ -125,16 +133,16 @@ Content-Type: application/json
 GET {{baseUrl}}/projects/{{createdProjectId}}
 
 ### GET projects filtered by userId
-GET {{baseUrl}}/projects?userId={{createdUserId}}
+GET {{baseUrl}}/projects?userId=670732808b89e3bb8e8c1111
 
-### PUT update project by ID
+### PUT update project by ID (Requires OAuth Authentication)
 PUT {{baseUrl}}/projects/{{createdProjectId}}
 Content-Type: application/json
 
 {
   "title": "Cloud Portfolio Engine v2.0",
   "description": "Enterprise-ready serverless portfolio engine with analytics and CI/CD pipelines.",
-  "userId": "{{createdUserId}}",
+  "userId": "670732808b89e3bb8e8c1111",
   "technologies": ["Node.js", "Express", "MongoDB", "Kubernetes", "Swagger", "Jest"],
   "githubRepo": "https://github.com/janedoe/cloud-portfolio-v2",
   "liveUrl": "https://portfolio-v2.onrender.com",
@@ -142,13 +150,11 @@ Content-Type: application/json
   "featured": true
 }
 
-### DELETE project by ID
+### DELETE project by ID (Requires OAuth Authentication)
 DELETE {{baseUrl}}/projects/{{createdProjectId}}
 
 
-### ------------------------------------------------------------
-### PROJECTS VALIDATION & ERROR HANDLING TESTS
-### ------------------------------------------------------------
+### --- Projects Validation & Error Tests ---
 
 ### TEST ERROR: GET project with Invalid ID format (Expect 400 Bad Request)
 GET {{baseUrl}}/projects/short-id
@@ -156,7 +162,7 @@ GET {{baseUrl}}/projects/short-id
 ### TEST ERROR: GET project with Non-existent ID (Expect 404 Not Found)
 GET {{baseUrl}}/projects/670732808b89e3bb8e8c8888
 
-### TEST ERROR: POST project with Missing Required Fields (Expect 400 Validation Error)
+### TEST ERROR: POST project with Missing Required Fields (Expect 400 or 401)
 POST {{baseUrl}}/projects
 Content-Type: application/json
 
@@ -165,15 +171,146 @@ Content-Type: application/json
   "description": ""
 }
 
-### TEST ERROR: POST project with Non-existent User ID (Expect 404 Not Found)
-POST {{baseUrl}}/projects
+
+### ------------------------------------------------------------
+### 3. EXPERIENCES COLLECTION CRUD OPERATIONS
+### ------------------------------------------------------------
+
+### GET all experiences
+GET {{baseUrl}}/experiences
+
+### POST create experience (Requires OAuth Authentication)
+# @name createExperience
+POST {{baseUrl}}/experiences
 Content-Type: application/json
 
 {
-  "title": "Orphan Project",
-  "description": "Project created for a user that does not exist.",
-  "userId": "670732808b89e3bb8e8c9999"
+  "userId": "670732808b89e3bb8e8c1111",
+  "company": "Tech Global Solutions",
+  "role": "Senior Cloud Backend Engineer",
+  "location": "Remote",
+  "startDate": "2023-01-15",
+  "endDate": null,
+  "current": true,
+  "description": "Designed microservices architecture, optimized MongoDB pipelines, and led REST API development.",
+  "technologies": ["Node.js", "Express", "MongoDB", "Docker", "AWS", "Jest"]
 }
 
-### TEST ERROR: Invalid URL route (Expect 404 Route Not Found)
-GET {{baseUrl}}/non-existent-route
+### Store the created Experience ID from response
+@createdExperienceId = {{createExperience.response.body.experienceId}}
+
+### GET experience by valid ID
+GET {{baseUrl}}/experiences/{{createdExperienceId}}
+
+### GET experiences filtered by userId
+GET {{baseUrl}}/experiences?userId=670732808b89e3bb8e8c1111
+
+### PUT update experience by ID (Requires OAuth Authentication)
+PUT {{baseUrl}}/experiences/{{createdExperienceId}}
+Content-Type: application/json
+
+{
+  "userId": "670732808b89e3bb8e8c1111",
+  "company": "Tech Global Solutions Inc.",
+  "role": "Staff Backend Architect",
+  "location": "Remote (USA)",
+  "startDate": "2023-01-15",
+  "endDate": null,
+  "current": true,
+  "description": "Staff Architect leading cloud modernization, high-availability clusters, and automated testing.",
+  "technologies": ["Node.js", "Express", "MongoDB", "Kubernetes", "AWS", "Jest"]
+}
+
+### DELETE experience by ID (Requires OAuth Authentication)
+DELETE {{baseUrl}}/experiences/{{createdExperienceId}}
+
+
+### --- Experiences Validation & Error Tests ---
+
+### TEST ERROR: GET experience with Invalid ID format (Expect 400 Bad Request)
+GET {{baseUrl}}/experiences/bad-id-12345
+
+### TEST ERROR: GET experience with Non-existent ID (Expect 404 Not Found)
+GET {{baseUrl}}/experiences/670732808b89e3bb8e8c7777
+
+### TEST ERROR: POST experience with Missing Fields (Expect 400 or 401)
+POST {{baseUrl}}/experiences
+Content-Type: application/json
+
+{
+  "company": "",
+  "role": ""
+}
+
+
+### ------------------------------------------------------------
+### 4. CONTACTS COLLECTION CRUD OPERATIONS
+### ------------------------------------------------------------
+
+### GET all contact messages (Requires OAuth Authentication)
+GET {{baseUrl}}/contacts
+
+### POST submit contact message (Public inquiry form)
+# @name createContact
+POST {{baseUrl}}/contacts
+Content-Type: application/json
+
+{
+  "userId": "670732808b89e3bb8e8c1111",
+  "senderName": "Sarah Connor",
+  "senderEmail": "sarah.connor@cyberdyne.com",
+  "subject": "Staff Backend Engineer Position",
+  "message": "Hi, we were impressed by your portfolio and would like to invite you for an interview.",
+  "read": false
+}
+
+### Store the created Contact ID from response
+@createdContactId = {{createContact.response.body.contactId}}
+
+### GET contact by valid ID (Requires OAuth Authentication)
+GET {{baseUrl}}/contacts/{{createdContactId}}
+
+### GET contacts filtered by userId (Requires OAuth Authentication)
+GET {{baseUrl}}/contacts?userId=670732808b89e3bb8e8c1111
+
+### PUT update contact status by ID (e.g., mark as read) (Requires OAuth Authentication)
+PUT {{baseUrl}}/contacts/{{createdContactId}}
+Content-Type: application/json
+
+{
+  "userId": "670732808b89e3bb8e8c1111",
+  "senderName": "Sarah Connor",
+  "senderEmail": "sarah.connor@cyberdyne.com",
+  "subject": "Staff Backend Engineer Position",
+  "message": "Hi, we were impressed by your portfolio and would like to invite you for an interview.",
+  "read": true
+}
+
+### DELETE contact by ID (Requires OAuth Authentication)
+DELETE {{baseUrl}}/contacts/{{createdContactId}}
+
+
+### --- Contacts Validation & Error Tests ---
+
+### TEST ERROR: GET contact with Invalid ID format (Expect 400 or 401)
+GET {{baseUrl}}/contacts/bad-contact-id
+
+### TEST ERROR: POST contact with Invalid Email (Expect 400 Bad Request)
+POST {{baseUrl}}/contacts
+Content-Type: application/json
+
+{
+  "userId": "670732808b89e3bb8e8c1111",
+  "senderName": "John Doe",
+  "senderEmail": "not-a-valid-email",
+  "subject": "Hello",
+  "message": "Test message"
+}
+
+### TEST ERROR: POST contact with Missing Fields (Expect 400 Bad Request)
+POST {{baseUrl}}/contacts
+Content-Type: application/json
+
+{
+  "userId": "670732808b89e3bb8e8c1111"
+}

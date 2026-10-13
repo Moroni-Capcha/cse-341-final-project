@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "swagger": "node swagger.js"
+    "swagger": "node swagger.js",
+    "test": "jest --forceExit"
   },
   "keywords": [
     "cse341",
@@ -21,11 +22,16 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "express-session": "^1.19.0",
     "mongodb": "^6.12.0",
+    "passport": "^0.7.0",
+    "passport-github2": "^0.1.12",
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
+    "jest": "^30.5.2",
     "nodemon": "^3.1.9",
+    "supertest": "^7.3.1",
     "swagger-autogen": "^2.23.7"
   }
 }
