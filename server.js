@@ -50,7 +50,7 @@ passport.use(
     {
       clientID: process.env.GITHUB_CLIENT_ID || 'placeholder_client_id',
       clientSecret: process.env.GITHUB_CLIENT_SECRET || 'placeholder_client_secret',
-      callbackURL: process.env.CALLBACK_URL || 'http://localhost:8080/github/callback'
+      callbackURL: process.env.CALLBACK_URL || 'https://cse-341-final-project-pidd.onrender.com/github/callback'
     },
     function (accessToken, refreshToken, profile, done) {
       return done(null, profile);
