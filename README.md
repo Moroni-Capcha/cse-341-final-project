@@ -1,6 +1,6 @@
-# CSE 341 Final Project - Portfolio Builder API (Week 06 Deliverables)
+# CSE 341 Final Project - Portfolio Builder API (Week 07 Deliverables - Finished Project)
 
-A comprehensive Node.js, Express.js, and MongoDB RESTful Web Service powering the **Portfolio Builder** developer showcase platform. This release completes **Part 2** of the final project, delivering all **four collections** with complete CRUD operations, **OAuth 2.0 GitHub Authentication**, strict **Payload Validation** on all POST and PUT endpoints, and an **Automated Unit Testing Suite** covering all GET/GetAll routes.
+A complete, production-ready Node.js, Express.js, and MongoDB RESTful Web Service powering the **Portfolio Builder** developer showcase platform. This release represents **Part 3 (Finish Project)**, delivering all **four collections** with complete CRUD operations, **GitHub OAuth 2.0 Authentication & User Management**, comprehensive **Data Validation** on all POST and PUT endpoints, an **Automated Unit Testing Suite** covering all GET routes, and live **Interactive Swagger Documentation** deployed to Render.
 
 ---
 
@@ -280,51 +280,52 @@ Visit the interactive Swagger UI at **[http://localhost:8080/api-docs](http://lo
 
 ---
 
-## 👥 Week 06 Deliverables & Individual Contributions
+## 👥 Week 07 Deliverables & Individual Contributions (Final Project Part 3)
 
 Per the assignment criteria (*"Each Team member document two individual contributions toward the weeks deliverables"*):
 
 ### Developer: Moroni Capcha
-- **Contribution 1: CRUD Implementation & Validation for Last Two Collections (`experiences` & `contacts`)**:
-  Engineered the complete controllers (`controllers/experiences.js`, `controllers/contacts.js`), route handlers (`routes/experiences.js`, `routes/contacts.js`), and validation middleware (`middleware/validate.js`). Enforced referential integrity verification against `users` and cascade cleanup logic upon user profile deletion.
-- **Contribution 2: OAuth 2.0 Implementation & Route Authorization**:
-  Implemented GitHub OAuth 2.0 authentication architecture in `server.js` using `passport`, `passport-github2`, and `express-session`. Created `middleware/authenticate.js` to protect sensitive and mutating endpoints (`projects`, `experiences`, `contacts`, and `users`), returning structured 401 Unauthorized responses to unauthenticated clients.
-- **Contribution 3: Automated Unit Testing Suite (Jest & Supertest)**:
-  Authored 5 test suites (`tests/users.test.js`, `tests/projects.test.js`, `tests/experiences.test.js`, `tests/contacts.test.js`, `tests/auth.test.js`) containing 20 automated unit tests testing all Get and GetAll endpoints, 404 not found handling, 400 ID validation, and 401 OAuth protection.
+- **Contribution 1: Full-Stack API Architecture & 4 Collections CRUD Finalization**:
+  Finalized, tested, and polished all RESTful endpoints across four distinct MongoDB collections (`users`, `projects`, `experiences`, and `contacts`). Ensured complete CRUD functionality with proper HTTP status codes (200, 201, 400, 401, 404, 409), strict input validation schemas for all POST and PUT routes, referential integrity verification against foreign keys, and cascade deletion for orphaned entities.
+- **Contribution 2: Production OAuth 2.0 Security & Route Protection Hardening**:
+  Configured and deployed production GitHub OAuth 2.0 authentication architecture on Render with Passport.js, express-session, and session cookie persistence. Implemented route authorization guards via `middleware/authenticate.js` to protect mutating endpoints across collections, returning structured 401 Unauthorized responses to unauthenticated users.
+- **Contribution 3: Automated Unit Testing Suite & Live Swagger Publication**:
+  Authored and maintained 5 automated test suites in `tests/` (`users.test.js`, `projects.test.js`, `experiences.test.js`, `contacts.test.js`, `auth.test.js`) containing 20 automated unit tests (Jest & Supertest) with 100% pass rate covering all GET and GetAll routes and route protection. Published live interactive OpenAPI/Swagger documentation at `/api-docs` on Render.
 
 ---
 
 ## 🎥 Video Presentation Guide (5 to 8 Minutes)
 
-> **Important**: The video MUST be strictly between **5 and 8 minutes** and uploaded to YouTube.
+> **Important**: 
+> 1. The video MUST be strictly between **5 and 8 minutes** and uploaded to YouTube.
+> 2. **Turn on your camera** for the video so your face is shown (required per Week 07 instructions).
 
 ### Step-by-Step Script Aligned with Rubric:
 
-1. **0:00 - 1:00 | Introduction & Deployment Verification (Rubric Item 1)**
-   - Introduce yourself: Moroni Capcha, CSE 341 Final Project Part 2.
-   - Show the published Render link in browser: `https://cse-341-final-project-pidd.onrender.com/api-docs/`.
-   - Point out that all sensitive credentials (`.env`) are kept out of GitHub via `.gitignore`.
-2. **1:00 - 2:30 | OAuth Demonstration (Rubric Item 4)**
+1. **0:00 - 0:45 | Introduction & Deployment Verification (Rubric Item 1)**
+   - Introduce yourself: Moroni Capcha, CSE 341 Final Project Completion.
+   - Show camera with face visible.
+   - Show published Render link: `https://cse-341-final-project-pidd.onrender.com/api-docs/`.
+   - Point out that `.env` is protected via `.gitignore`.
+2. **0:45 - 1:45 | OAuth Demonstration (Rubric Item 4)**
    - Open root URL `https://cse-341-final-project-pidd.onrender.com/` showing `Logged Out`.
    - Click "Sign in with GitHub" to trigger `/login` -> authorize with GitHub.
    - Show redirect back to `/` displaying `Logged in as [Your Name]`.
-   - Attempt a protected route while logged out (or show 401 Unauthorized in Swagger/rest.http) and then execute while authenticated.
    - Demonstrate `/logout` returning the user to `Logged Out` state.
-3. **2:30 - 4:30 | CRUD Operations Across Collections (Rubric Item 2)**
+3. **1:45 - 3:45 | CRUD Operations Across All 4 Collections (Rubric Item 2)**
    - In Swagger UI at `/api-docs/`:
-     - **Users**: Show `GET /users`, `POST /users` (create user).
-     - **Projects**: Show `GET /projects`, `POST /projects`, `PUT /projects/{id}`, `DELETE /projects/{id}`.
-     - **Experiences**: Show `GET /experiences`, `POST /experiences`, `PUT /experiences/{id}`, `DELETE /experiences/{id}`.
+     - **Users**: Show `POST /users` (create user, copy ID) and `GET /users`.
+     - **Projects**: Show `POST /projects` (using userId), `GET /projects`, `PUT /projects/{id}`, `DELETE /projects/{id}`.
+     - **Experiences**: Show `POST /experiences`, `GET /experiences`, `PUT /experiences/{id}`, `DELETE /experiences/{id}`.
      - **Contacts**: Show `POST /contacts` (public submission) and `GET /contacts` (protected list).
    - Verify that updates are reflected in the database and correct HTTP status codes (`200`, `201`) are returned.
-4. **4:30 - 6:00 | Data Validation Demonstration (Rubric Item 3)**
-   - Test `POST` / `PUT` with missing required fields or invalid types: show `400 Bad Request` with structured error array.
-   - Test passing an invalid ID (e.g., `invalid123`): show `400 Bad Request` ("Invalid ID format").
+4. **3:45 - 4:45 | Data Validation Demonstration (Rubric Item 3)**
+   - Test `POST` with missing required fields: show `400 Bad Request` with structured error array.
+   - Test passing an invalid ID (e.g., `123-bad-id`): show `400 Bad Request` ("Invalid ID format").
    - Test non-existent ID: show `404 Not Found`.
-5. **6:00 - 7:00 | Automated Unit Tests (Rubric Item 5)**
+5. **4:45 - 5:25 | Automated Unit Tests (Rubric Item 5)**
    - Open terminal in VS Code and run `npm test`.
-   - Show all 5 test suites running with Jest and Supertest.
-   - Highlight that all unit tests exist and pass for all Get and GetAll routes across all database collections.
-6. **7:00 - 7:45 | Individual Contributions & Conclusion (Rubric Item 6)**
-   - Summarize the individual contributions documented in the README and project deliverables.
+   - Show all 5 test suites running with Jest and Supertest with 20 passing unit tests.
+6. **5:25 - 5:50 | Individual Contributions & Conclusion (Rubric Item 6)**
+   - Highlight the individual contributions documented in the README.
    - Conclude presentation within the 5–8 minute window.

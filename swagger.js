@@ -3,8 +3,8 @@ const swaggerAutogen = require('swagger-autogen')();
 const doc = {
   info: {
     title: 'Portfolio Builder API',
-    description: 'API documentation for Portfolio Builder (CSE 341 Final Project Part 2). Manages Users, Projects, Experiences, and Contacts collections with complete CRUD operations, OAuth 2.0 authorization, input validation, and centralized error handling.',
-    version: '2.0.0'
+    description: 'Complete API documentation for Portfolio Builder (CSE 341 Final Project - Finished API). Manages Users, Projects, Experiences, and Contacts collections with complete CRUD operations, GitHub OAuth 2.0 authorization, input validation, and centralized error handling.',
+    version: '3.0.0'
   },
   host: 'localhost:8080',
   schemes: ['http', 'https'],
